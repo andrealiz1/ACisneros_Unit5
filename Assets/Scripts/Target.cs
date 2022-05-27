@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Target : MonoBehaviour
 {
@@ -24,8 +25,8 @@ public class Target : MonoBehaviour
         targetRB = GetComponent<Rigidbody>();
         gameManager = GameObject.Find("Game Manager").GetComponent<GameManager>();
 
-        RandomForce();
         RandomTorque();
+        RandomForce();
         RandomSpawnPos();      
     }
 
@@ -47,16 +48,25 @@ public class Target : MonoBehaviour
         transform.position = new Vector3(Random.Range(minXPos, maxXPos),
             ySpawnPos);
     }
-       
+
     private void OnMouseDown()
     {
-        gameManager.UpdateScore(pointValue);
-        Instantiate(expParticle, transform.position, expParticle.transform.rotation);
-        Destroy(gameObject);
+        if (gameManager.gameActive)
+        {
+            gameManager.UpdateScore(pointValue);
+            Instantiate(expParticle, transform.position, expParticle.transform.rotation);
+            Destroy(gameObject);
+        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         Destroy(gameObject);
+        if (!gameObject.CompareTag("Hazard"))
+        {
+             gameManager.GameOver();
+        }
     }
+
+  
 }
